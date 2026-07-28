@@ -33,6 +33,9 @@ The app uses two asset sources:
   themes, Alpine.js, HTMX, fonts, and library artwork.
 - Starter app assets are served from `/dog-images/` by this app. The dog images
   live in `assets/dogs` and are embedded with Go's `embed` package.
+- Arai Hû's organization theme is vendored as `araihu.css`, served at
+  `/araihu.css`, and selected by default. Other Goshtoso themes remain
+  available through the normal `data-theme` contract.
 
 That split keeps Goshtoso reusable while keeping your application images under
 your application's control.
