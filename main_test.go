@@ -32,11 +32,35 @@ func TestBreedsPageRendersRoundDogPhotos(t *testing.T) {
 	appMux().ServeHTTP(rec, req)
 
 	body := rec.Body.String()
+	for _, want := range []string{`data-theme="araihu"`, `href="/araihu.css"`, `localStorage.getItem('theme') || 'araihu'`} {
+		if !strings.Contains(body, want) {
+			t.Fatalf("page missing Arai Hû default theme contract %q:\n%s", want, body)
+		}
+	}
 	if !strings.Contains(body, `/dog-images/australian-shepherd.webp`) {
 		t.Fatalf("page must render dog image cells:\n%s", body)
 	}
 	if !strings.Contains(body, `rounded-full`) {
 		t.Fatalf("dog photos must use round thumbnail styling:\n%s", body)
+	}
+}
+
+func TestAraiHuThemeIsServed(t *testing.T) {
+	req := httptest.NewRequestWithContext(t.Context(), http.MethodGet, "/araihu.css", nil)
+	rec := httptest.NewRecorder()
+
+	appMux().ServeHTTP(rec, req)
+
+	if rec.Code != http.StatusOK {
+		t.Fatalf("theme status = %d, want 200", rec.Code)
+	}
+	if got := rec.Header().Get("Content-Type"); !strings.Contains(got, "text/css") {
+		t.Fatalf("theme content-type = %q, want text/css", got)
+	}
+	for _, want := range []string{`[data-theme="araihu"]`, `--color-primary: #173b72`, `--color-primary-dark: #c7ff4a`} {
+		if !strings.Contains(rec.Body.String(), want) {
+			t.Fatalf("theme missing canonical token %q", want)
+		}
 	}
 }
 
